@@ -98,14 +98,25 @@ public:
     // Core A: Add a Space with Capacity Enforcement
     // -------------------------------
     bool addSpace(const T& value) {
-        // TODO:
-        // - If nodeCount == MAX_SPACES return false (do not corrupt list)
-        // - Create new node
-        // - If empty list: head=tail=player=new, new->next=head
-        // - Else: tail->next=new, tail=new, tail->next=head
-        // - nodeCount++
-        cout << "addSpace unwritten" << endl;
-        return false;
+        if (nodeCount >= MAX_SPACES) {
+            return false;
+        }
+
+        Node<T>* newNode = new Node<T>(value);
+
+        if (headNode == nullptr) {
+            headNode = newNode;
+            tailNode = newNode;
+            playerNode = newNode;
+            tailNode->nextNode = headNode;
+        } else {
+            tailNode->nextNode = newNode;
+            tailNode = newNode;
+            tailNode->nextNode = headNode;
+        }
+
+        nodeCount++;
+        return true;
     }
 
     // -------------------------------
@@ -150,11 +161,20 @@ public:
         cout << "printFromPlayer unwritten" << endl;
     }
 
-    // Optional helper: print full board once (one full cycle)
+    // Print full board once (one full cycle)
     void printBoardOnce() {
-        // TODO:
-        // - Traverse exactly one full cycle and print each node
-        cout << "printBoardOnce unwritten" << endl;
+        if (headNode == nullptr) {
+            cout << "Board if empty!" << endl;
+            return;
+        }
+
+        Node<T>* currentNode = headNode;
+        do {
+            cout << " - ";
+            currentNode->data.print();
+            cout << endl;
+            currentNode = currentNode->nextNode;
+        } while (currentNode != headNode);
     }
 
     // -------------------------------
@@ -233,6 +253,33 @@ int main() {
     srand(static_cast<unsigned>(time(nullptr)));
 
     CircularLinkedList<MonopolySpace> board;
+
+    // Test: addSpace capacity + circular integrity
+    // TEMPORARY
+    // TODO: Delete test loop next commit.
+
+    cout << "Filling board using addSpace..." << endl;
+
+    bool allAddsWorked = true;
+    for (int i = 0; i < MAX_SPACES; i++) {
+        string name = "Test Space " + to_string(i);
+        bool worked = board.addSpace(MonopolySpace(name, "TestColor", i * 10, i));
+        if (!worked) {
+            cout << "ERROR: addSpace failed early at i=" << i << endl;
+            allAddsWorked = false;
+            break;
+        }
+    }
+
+    cout << "Filled to Max_Spaces. Success: " << (allAddsWorked ? "true" : "false") << endl;
+
+    // Try to add one more after filled which should fail (overflow)
+    bool shouldFail = board.addSpace(MonopolySpace("Overflow Space", "Overflow", 999, 99));
+    cout << "Attempt to add past 40: " << (shouldFail ? "true" : "false") << endl;
+
+    // Print
+    board.printBoardOnce();
+
 
     // -------------------------------
     // Board Construction Phase

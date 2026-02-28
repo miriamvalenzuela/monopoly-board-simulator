@@ -41,14 +41,14 @@ Each entry may be one of the following:
 ---
 
 ### Entry 2
-**Date:** YYYY-MM-DD  
-**Entry Type:** Bug Fix / Edge Case / Engineering Decision  
-**Task worked on:**  
-**Issue or decision:**  
-**Error message / symptom (if applicable):**  
-**What I tried:**  
-**Fix / resolution (or final decision):**  
-**Commit(s):**
+**Date:** 2026-02-27  
+**Entry Type:** Bug Fix  
+**Task worked on:**   `addSpace` circular integrity  
+**Issue or decision:**  After inserting nodes, traversal did not loop correctly and sometimes printing only showed part of the list.  
+**Error message / symptom (if applicable):**  Printing was inconsistent; the list did not behave like a ring.  
+**What I tried:**  I printed `headNode`, `tailNode`, and `tailNode-->nextNode` information after each insertion and verified the links.  
+**Fix / resolution (or final decision):** I realized I must always maintain `tailNode-->nextNode == headNode`. The fix was to set `tailNode-->nextNode = headNode` after updating the tail in both the empty-list non-empty cases.  
+**Commit(s):** `implement addSpace with MAX_SPACES enforcement and circular linking`  
 
 ---
 
