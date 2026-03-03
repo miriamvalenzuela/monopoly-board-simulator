@@ -36,8 +36,7 @@ There is **no single required way** to construct the board. The requirement is t
 
 ## How to Build and Run
 ### Build
-(Write your build instructions here.)
-Example:
+From the project directory:
 - `g++ -std=c++17 monopoly_board.cpp -o monopoly_board`
 
 ### Run

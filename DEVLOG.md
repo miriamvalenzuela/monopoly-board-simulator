@@ -53,14 +53,14 @@ Each entry may be one of the following:
 ---
 
 ### Entry 3
-**Date:** YYYY-MM-DD  
-**Entry Type:** Bug Fix / Edge Case / Engineering Decision  
-**Task worked on:**  
-**Issue or decision:**  
-**Error message / symptom (if applicable):**  
-**What I tried:**  
-**Fix / resolution (or final decision):**  
-**Commit(s):**
+**Date:** 2026-03-02  
+**Entry Type:** Edge Case / Testing Entry
+**Task worked on:**  `addSpace` circular integrity.  
+**Issue or decision:**  Adding more than  40 spaces could potentially corrupt the list if insertions continue after reaching capacity.  
+**Error message / symptom (if applicable):**  When testing large inputs (45 spaces), I saw unexpected behavior and incorrect counts.  
+**What I tried:**  I generated 45 spaces and used `printBoardOnce()` to validate that the traversal was still correct. 
+**Fix / resolution (or final decision):**  I ensured `addMany` stops immediately when `addSpace` returns false, and returns exactly how many were added. This guarantees it stops at 40 and does not corrupt pointers.
+**Commit(s):** `implement addMany stopping exactly at capacity`
 
 ---
 

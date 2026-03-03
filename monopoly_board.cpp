@@ -123,13 +123,16 @@ public:
     // Core B: Add Multiple Spaces at Once
     // -------------------------------
     int addMany(const vector<T>& values) {
-        // TODO:
-        // - Add sequentially until full
-        // - Stop exactly when you reach MAX_SPACES
-        // - Return number successfully added
-        // - Do not corrupt pointers if capacity is exceeded
-        cout << "addMany unwritten" << endl;
-        return 0;
+        int added = 0;
+
+        for (int i = 0; i < static_cast<int>(values.size()); i++) {
+            if (!addSpace(values[i])) {
+                break;
+            }
+            added++;
+        }
+
+        return added;
     }
 
     // -------------------------------
@@ -254,32 +257,44 @@ int main() {
 
     CircularLinkedList<MonopolySpace> board;
 
-    // Test: addSpace capacity + circular integrity
-    // TEMPORARY
-    // TODO: Delete test loop next commit.
+    // Day 5 Test - addMany() capacity enforcement + pointer safety
+    // Temporary
+    // TODO: Delete test in next commit.
 
-    cout << "Filling board using addSpace..." << endl;
-
-    bool allAddsWorked = true;
-    for (int i = 0; i < MAX_SPACES; i++) {
-        string name = "Test Space " + to_string(i);
-        bool worked = board.addSpace(MonopolySpace(name, "TestColor", i * 10, i));
-        if (!worked) {
-            cout << "ERROR: addSpace failed early at i=" << i << endl;
-            allAddsWorked = false;
-            break;
+    // Create 45 spaces (more than MAX_SPACES)
+    vector<MonopolySpace> testSpaces;
+    for (int i = 0; i < 45; i++) {
+        string name = "Many Space " + to_string(i);
+        string color;
+        if ( i % 2 == 0) {
+            color = "Blue";
+        } else {
+            color = "Red";
         }
+
+        int value = i * 10;
+        int rent = 1;
+
+        testSpaces.push_back(MonopolySpace(name, color, value, rent));
     }
 
-    cout << "Filled to Max_Spaces. Success: " << (allAddsWorked ? "true" : "false") << endl;
+    cout << "Created " << testSpaces.size() << " test spaces." << endl;
 
-    // Try to add one more after filled which should fail (overflow)
-    bool shouldFail = board.addSpace(MonopolySpace("Overflow Space", "Overflow", 999, 99));
-    cout << "Attempt to add past 40: " << (shouldFail ? "true" : "false") << endl;
+    int added = board.addMany(testSpaces);
 
-    // Print
+    cout << "\nResult from addMany:" << endl;
+    cout << "addMany returned " << added << endl;
+
+    // Try adding one more still after addMany
+    bool addedExtra = board.addSpace(MonopolySpace("Overflow Space", "None", 999, 99));
+    cout << " Result after addMany returned: ";
+    if (addedExtra) {
+        cout << "true (BAD)" << endl;
+    } else {
+        cout << "false (GOOD)" << endl;
+    }
+
     board.printBoardOnce();
-
 
     // -------------------------------
     // Board Construction Phase
