@@ -156,18 +156,24 @@ public:
     // Core D: Controlled Board Display
     // -------------------------------
     void printFromPlayer(int count) {
-        // TODO:
-        // - Print exactly 'count' nodes starting from playerNode
-        // - Must not infinite loop
-        // - Must handle empty list
-        // - Output must be deterministic and readable
-        cout << "printFromPlayer unwritten" << endl;
+        if (headNode == nullptr || playerNode == nullptr || count <= 0) {
+            cout << "[Board is Empty!]" << endl;
+            return;
+        }
+
+        Node<T>* current = playerNode;
+        for (int i = 0; i < count; i++) {
+            cout << " - ";
+            current->data.print();
+            cout << endl;
+            current = current->nextNode;
+        }
     }
 
     // Print full board once (one full cycle)
     void printBoardOnce() {
         if (headNode == nullptr) {
-            cout << "Board if empty!" << endl;
+            cout << "Board is empty!" << endl;
             return;
         }
 
@@ -257,42 +263,29 @@ int main() {
 
     CircularLinkedList<MonopolySpace> board;
 
-    // Day 5 Test - addMany() capacity enforcement + pointer safety
+    // Test printFromPlayer(count)
     // Temporary
     // TODO: Delete test in next commit.
 
-    // Create 45 spaces (more than MAX_SPACES)
-    vector<MonopolySpace> testSpaces;
-    for (int i = 0; i < 45; i++) {
-        string name = "Many Space " + to_string(i);
-        string color;
-        if ( i % 2 == 0) {
-            color = "Blue";
-        } else {
-            color = "Red";
-        }
-
-        int value = i * 10;
-        int rent = 1;
-
-        testSpaces.push_back(MonopolySpace(name, color, value, rent));
+    // Empty board should not crash
+    {
+        CircularLinkedList<MonopolySpace> empty;
+        cout << "Empty board" << endl;
+        empty.printFromPlayer(3);
     }
 
-    cout << "Created " << testSpaces.size() << " test spaces." << endl;
+    // Small board wrap-around behavior
 
-    int added = board.addMany(testSpaces);
+    CircularLinkedList<MonopolySpace> smallBoard;
+    smallBoard.addSpace(MonopolySpace("GO", "None", 0, 0));
+    smallBoard.addSpace(MonopolySpace("A", "Blue", 10, 1));
+    smallBoard.addSpace(MonopolySpace("B", "Red", 20, 2));
+    cout << "Printing 7 spaces from player start: " << endl;
+    smallBoard.printFromPlayer(7);
 
-    cout << "\nResult from addMany:" << endl;
-    cout << "addMany returned " << added << endl;
-
-    // Try adding one more still after addMany
-    bool addedExtra = board.addSpace(MonopolySpace("Overflow Space", "None", 999, 99));
-    cout << " Result after addMany returned: ";
-    if (addedExtra) {
-        cout << "true (BAD)" << endl;
-    } else {
-        cout << "false (GOOD)" << endl;
-    }
+    cout << "Move player by 2 steps, then print 5 spaces: " << endl;
+    smallBoard.movePlayer(2);
+    smallBoard.printFromPlayer(5);
 
     board.printBoardOnce();
 
