@@ -139,13 +139,16 @@ public:
     // Core C: Traversal-Based Player Movement
     // -------------------------------
     void movePlayer(int steps) {
-        // TODO:
-        // - Move playerNode forward 'steps' times, node-by-node
-        // - Wrap naturally because list is circular
-        // - Detect and track passing GO:
-        //   increment passGoCount when a move crosses from tail back to head
-        // - Must handle empty list safely
-        cout << "movePlayer unwritten" << endl;
+        if (headNode == nullptr || playerNode == nullptr || steps <= 0) {
+            return;
+        }
+
+        for (int i = 0; i < steps; i++) {
+            if (playerNode == tailNode) {
+                passGoCount++;
+            }
+            playerNode = playerNode->nextNode;
+        }
     }
 
     int getPassGoCount() {
@@ -263,29 +266,49 @@ int main() {
 
     CircularLinkedList<MonopolySpace> board;
 
-    // Test printFromPlayer(count)
+    // Tet movePlayer() + passGoCount
     // Temporary
     // TODO: Delete test in next commit.
 
-    // Empty board should not crash
+    // Empty board should be safe
     {
-        CircularLinkedList<MonopolySpace> empty;
-        cout << "Empty board" << endl;
-        empty.printFromPlayer(3);
+        CircularLinkedList<MonopolySpace> emptyBoard;
+        emptyBoard.movePlayer(5);
+        cout << "Pass GO count: " << emptyBoard.getPassGoCount() << endl;
     }
 
-    // Small board wrap-around behavior
+    // Small board wrap + GO counting
+    CircularLinkedList<MonopolySpace> testBoard;
+    testBoard.addSpace(MonopolySpace("GO", "None", 0, 0));
+    testBoard.addSpace(MonopolySpace("A", "Blue", 10, 1));
+    testBoard.addSpace(MonopolySpace("B", "Red", 20, 2));
 
-    CircularLinkedList<MonopolySpace> smallBoard;
-    smallBoard.addSpace(MonopolySpace("GO", "None", 0, 0));
-    smallBoard.addSpace(MonopolySpace("A", "Blue", 10, 1));
-    smallBoard.addSpace(MonopolySpace("B", "Red", 20, 2));
-    cout << "Printing 7 spaces from player start: " << endl;
-    smallBoard.printFromPlayer(7);
+    cout << "\nStart Position (player starts at GO). Print 3 spaces:" << endl;
+    testBoard.printFromPlayer(3);
 
-    cout << "Move player by 2 steps, then print 5 spaces: " << endl;
-    smallBoard.movePlayer(2);
-    smallBoard.printFromPlayer(5);
+    // Move 2 steps
+    testBoard.movePlayer(2);
+    cout << "Pass GO count: " << testBoard.getPassGoCount() << " (expected 0)" << endl;
+    cout << "Now player should be at B. Print next 3 spaces:" << endl;
+    testBoard.printFromPlayer(3);
+
+    // Move 1 step: B -> GO (this crosses tail->head, should pass GO once)
+    cout << "\nMove 1 step (B -> GO). Expected pass GO count becomes 1." << endl;
+    testBoard.movePlayer(1);
+    cout << "Pass GO count: " << testBoard.getPassGoCount() << " (expected 1)" << endl;
+    cout << "Now player should be at GO. Print next 3 spaces:" << endl;
+    testBoard.printFromPlayer(3);
+
+    // Move 6 steps total from GO on a 3-space board:
+    // Every 3 steps wraps once, so 6 steps wraps twice => should pass GO 2 more times.
+    // Starting at GO: passing GO happens when crossing B->GO.
+    // In 6 steps, cross B->GO exactly 2 times.
+    cout << "\nMove 6 steps from GO on 3-space board." << endl;
+    cout << "Expected additional passes: 2, so total should become 3." << endl;
+    testBoard.movePlayer(6);
+    cout << "Pass GO count: " << testBoard.getPassGoCount() << " (expected 3)" << endl;
+    cout << "Print next 3 spaces from current position:" << endl;
+    testBoard.printFromPlayer(3);
 
     board.printBoardOnce();
 

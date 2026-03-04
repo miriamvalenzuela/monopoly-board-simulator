@@ -65,14 +65,14 @@ Each entry may be one of the following:
 ---
 
 ### Entry 4
-**Date:** YYYY-MM-DD  
-**Entry Type:** Bug Fix / Edge Case / Engineering Decision  
-**Task worked on:**  
-**Issue or decision:**  
-**Error message / symptom (if applicable):**  
-**What I tried:**  
-**Fix / resolution (or final decision):**  
-**Commit(s):**
+**Date:** 2026-03-05  
+**Entry Type:** Bug Fix  
+**Task worked on:** `movePlayer` GO tracking correctness  
+**Issue or decision:** My GO counter was wrong in some cases because I didn’t define exactly when “passing GO” occurs.  
+**Error message / symptom (if applicable):** `passGoCount` sometimes increased when landing near GO or didn’t increase when wrapping.  
+**What I tried:** I tested movement on a small board and logged the player’s node each step. I compared results for moves that land on GO vs moves that pass over GO.  
+**Fix / resolution (or final decision):** I defined passing GO as crossing from the tail node back to the head node (tail -> head transition). The fix was to increment `passGoCount` when `playerNode == tailNode` before advancing to `playerNode->nextNode`.  
+**Commit(s):** `implement movePlayer traversal and pass GO detection`
 
 ---
 
