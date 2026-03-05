@@ -266,68 +266,58 @@ int main() {
 
     CircularLinkedList<MonopolySpace> board;
 
-    // Tet movePlayer() + passGoCount
+    // Test: Build a meaningful 40-space board using addMany()
     // Temporary
-    // TODO: Delete test in next commit.
+    // TODO: Delete test in next commit
 
-    // Empty board should be safe
-    {
-        CircularLinkedList<MonopolySpace> emptyBoard;
-        emptyBoard.movePlayer(5);
-        cout << "Pass GO count: " << emptyBoard.getPassGoCount() << endl;
+    vector<MonopolySpace> spaces;
+
+    // Always add GO first
+    spaces.push_back(MonopolySpace("GO", "None", 0, 0));
+
+    // Create 39 more spaces (Space 1 ... Space 39)
+    for (int i = 1; i < MAX_SPACES; i++) {
+        string name = "Space " + to_string(i);
+
+        // Give repeating colors so findByColor works later
+        string color;
+        if (i % 4 == 0) color = "Red";
+        else if (i % 4 == 1) color = "Blue";
+        else if (i % 4 == 2) color = "Green";
+        else color = "Yellow";
+
+        int value = i * 10;
+        int rent = i * 2;
+
+        spaces.push_back(MonopolySpace(name, color, value, rent));
     }
 
-    // Small board wrap + GO counting
-    CircularLinkedList<MonopolySpace> testBoard;
-    testBoard.addSpace(MonopolySpace("GO", "None", 0, 0));
-    testBoard.addSpace(MonopolySpace("A", "Blue", 10, 1));
-    testBoard.addSpace(MonopolySpace("B", "Red", 20, 2));
+    cout << "Created " << spaces.size() << " spaces in a vector (expected 40)." << endl;
 
-    cout << "\nStart Position (player starts at GO). Print 3 spaces:" << endl;
-    testBoard.printFromPlayer(3);
+    int added = board.addMany(spaces);
+    cout << "board.addMany(...) returned: " << added << " (expected 40)" << endl;
 
-    // Move 2 steps
-    testBoard.movePlayer(2);
-    cout << "Pass GO count: " << testBoard.getPassGoCount() << " (expected 0)" << endl;
-    cout << "Now player should be at B. Print next 3 spaces:" << endl;
-    testBoard.printFromPlayer(3);
-
-    // Move 1 step: B -> GO (this crosses tail->head, should pass GO once)
-    cout << "\nMove 1 step (B -> GO). Expected pass GO count becomes 1." << endl;
-    testBoard.movePlayer(1);
-    cout << "Pass GO count: " << testBoard.getPassGoCount() << " (expected 1)" << endl;
-    cout << "Now player should be at GO. Print next 3 spaces:" << endl;
-    testBoard.printFromPlayer(3);
-
-    // Move 6 steps total from GO on a 3-space board:
-    // Every 3 steps wraps once, so 6 steps wraps twice => should pass GO 2 more times.
-    // Starting at GO: passing GO happens when crossing B->GO.
-    // In 6 steps, cross B->GO exactly 2 times.
-    cout << "\nMove 6 steps from GO on 3-space board." << endl;
-    cout << "Expected additional passes: 2, so total should become 3." << endl;
-    testBoard.movePlayer(6);
-    cout << "Pass GO count: " << testBoard.getPassGoCount() << " (expected 3)" << endl;
-    cout << "Print next 3 spaces from current position:" << endl;
-    testBoard.printFromPlayer(3);
+    // Confirm board is full by trying to add one more space
+    bool extraAdd = board.addSpace(MonopolySpace("Overflow Space", "None", 999, 99));
+    cout << "Trying to add a 41st space returned: "
+         << (extraAdd ? "true" : "false") << " (expected false)" << endl;
 
     board.printBoardOnce();
 
     // -------------------------------
     // Board Construction Phase
     // -------------------------------
-    // You decide how to build the board:
-    // - hardcode spaces, load from file, or generate spaces programmatically
-    // The only requirement: never exceed MAX_SPACES and keep the list circular.
-    //
-    // Example (hardcoded) usage:
-    // vector<MonopolySpace> spaces;
-    // spaces.push_back(MonopolySpace("GO","None",0,0));
-    // ...
-    // board.addMany(spaces);
-    //
-    // NOTE: This starter calls addSpace once to show the intended API,
-    // but your final submission should build a meaningful board.
-    board.addSpace(MonopolySpace("GO", "None", 0, 0));
+    spaces.push_back(MonopolySpace("GO", "None", 0, 0));
+
+    for (int i = 1; i < MAX_SPACES; i++) {
+        string name = "Space " + to_string(i);
+        string color = (i % 4 == 0) ? "Red" :
+                       (i % 4 == 1) ? "Blue" :
+                       (i % 4 == 2) ? "Green" : "Yellow";
+        spaces.push_back(MonopolySpace(name, color, i * 10, i * 2));
+    }
+
+    cout << "Built board with " << added << " spaces." << endl;
 
     // -------------------------------
     // Playable Traversal Loop

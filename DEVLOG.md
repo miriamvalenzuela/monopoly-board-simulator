@@ -65,7 +65,7 @@ Each entry may be one of the following:
 ---
 
 ### Entry 4
-**Date:** 2026-03-05  
+**Date:** 2026-03-04  
 **Entry Type:** Bug Fix  
 **Task worked on:** `movePlayer` GO tracking correctness  
 **Issue or decision:** My GO counter was wrong in some cases because I didn’t define exactly when “passing GO” occurs.  
