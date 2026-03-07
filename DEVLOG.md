@@ -77,14 +77,14 @@ Each entry may be one of the following:
 ---
 
 ### Entry 5
-**Date:** YYYY-MM-DD  
-**Entry Type:** Bug Fix / Edge Case / Engineering Decision  
-**Task worked on:**  
-**Issue or decision:**  
-**Error message / symptom (if applicable):**  
-**What I tried:**  
-**Fix / resolution (or final decision):**  
-**Commit(s):**
+**Date:** 2026-03-06  
+**Entry Type:** Edge Case / Testing Entry  
+**Task worked on:** `findByColor(const string& color)` (Advanced Option A)  
+**Issue or decision:** I needed to return all property names that match a given color while traversing the circular linked list exactly once. I didn't realize at first that because the list is circular, a normal `while (current != nullptr)` traversal would never terminate. I also needed to safely handle an empty board.  
+**Error message / symptom (if applicable):** When trying my first attempt at findByColor implementation, a `nullptr`-based loop would cause an infinite loop on a circular list causing the program to hang while traversing.  
+**What I tried:** I tested the function using a board of 40 generated spaces with repeating colors (Red/Blue/Green/Yellow). I verified, calling `findByColor("Red")` returns a non-empty vector, calling `findByColor("Purple")` returns an empty vector, and calling it on an empty board returns an empty vector without crashing.    
+**Fix / resolution (or final decision):** I implemented traversal using a correct circular stop condition (`do { ... } while (current != headNode)`), starting at `headNode` and stopping as soon as the traversal returns to the head. This makes sure exactly one ring traversal occurs, and prevents infinite loops. I also added an early return for `headNode == nullptr`.  
+**Commit(s):** `implement findByColor with single-cycle traversal`
 
 ---
 

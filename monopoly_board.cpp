@@ -210,12 +210,20 @@ public:
     // Advanced Option A (Level 1): findByColor
     // -------------------------------
     vector<string> findByColor(const string& color) {
-        // TODO:
-        // - Traverse ring exactly once
-        // - Collect matching names in vector<string>
-        // - Return matches
-        cout << "findByColor unwritten" << endl;
         vector<string> matches;
+
+        if (headNode == nullptr) {
+            return matches;
+        }
+
+        Node<T>* current = headNode;
+        do {
+            if (current->data.propertyColor == color) {
+                matches.push_back(current->data.propertyName);
+            }
+            current = current->nextNode;
+        } while (current != headNode);
+
         return matches;
     }
 
@@ -266,47 +274,12 @@ int main() {
 
     CircularLinkedList<MonopolySpace> board;
 
-    // Test: Build a meaningful 40-space board using addMany()
-    // Temporary
-    // TODO: Delete test in next commit
-
-    vector<MonopolySpace> spaces;
-
-    // Always add GO first
-    spaces.push_back(MonopolySpace("GO", "None", 0, 0));
-
-    // Create 39 more spaces (Space 1 ... Space 39)
-    for (int i = 1; i < MAX_SPACES; i++) {
-        string name = "Space " + to_string(i);
-
-        // Give repeating colors so findByColor works later
-        string color;
-        if (i % 4 == 0) color = "Red";
-        else if (i % 4 == 1) color = "Blue";
-        else if (i % 4 == 2) color = "Green";
-        else color = "Yellow";
-
-        int value = i * 10;
-        int rent = i * 2;
-
-        spaces.push_back(MonopolySpace(name, color, value, rent));
-    }
-
-    cout << "Created " << spaces.size() << " spaces in a vector (expected 40)." << endl;
-
-    int added = board.addMany(spaces);
-    cout << "board.addMany(...) returned: " << added << " (expected 40)" << endl;
-
-    // Confirm board is full by trying to add one more space
-    bool extraAdd = board.addSpace(MonopolySpace("Overflow Space", "None", 999, 99));
-    cout << "Trying to add a 41st space returned: "
-         << (extraAdd ? "true" : "false") << " (expected false)" << endl;
-
     board.printBoardOnce();
 
     // -------------------------------
     // Board Construction Phase
     // -------------------------------
+    vector<MonopolySpace> spaces;
     spaces.push_back(MonopolySpace("GO", "None", 0, 0));
 
     for (int i = 1; i < MAX_SPACES; i++) {
@@ -317,6 +290,7 @@ int main() {
         spaces.push_back(MonopolySpace(name, color, i * 10, i * 2));
     }
 
+    int added = board.addMany(spaces);
     cout << "Built board with " << added << " spaces." << endl;
 
     // -------------------------------
@@ -337,12 +311,10 @@ int main() {
     // -------------------------------
     // Advanced Feature Demos (students choose path)
     // -------------------------------
-    // Option A examples:
-    // board.removeByName("Baltic Avenue");
-    // vector<string> brownProps = board.findByColor("Brown");
-    //
-    // Option B example:
-    // board.mirrorBoard();
+
+    // Advanced Option A
+    vector<string> reds = board.findByColor("Red");
+    cout << "Red spaces: " << reds.size() << endl;
 
     return 0;
 }
