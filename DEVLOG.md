@@ -89,11 +89,11 @@ Each entry may be one of the following:
 ---
 
 ### Entry 6
-**Date:** YYYY-MM-DD  
-**Entry Type:** Bug Fix / Edge Case / Engineering Decision  
-**Task worked on:**  
-**Issue or decision:**  
-**Error message / symptom (if applicable):**  
-**What I tried:**  
-**Fix / resolution (or final decision):**  
-**Commit(s):**  
+**Date:** 2026-03-06  
+**Entry Type:** Bug Fix / Edge Case / Testing Entry  
+**Task worked on:** `removeByName(string name)` (Advanced Option A)  
+**Issue or decision:** Implementing deletion in a circular linked list requires handling special cases without breaking the ring. I needed to delete the first matching node and correctly handle deleting the head, tail, and the only-node list, while also keeping the player cursor safe if it pointed to the deleted node.  
+**Error message / symptom (if applicable):** Breaking circular integrity (`tailNode->nextNode` not pointing to the new head), or crashing later when printing/moving because `playerNode` or `tailNode->nextNode` pointed to deleted memory.  
+**What I tried:** I built a small 3-space board (`GO -> A -> B`) and tested these cases one-by-one: remove on an empty board (should return false), delete the only node in a one-space list, delete head (`GO`) and confirm list cycles between remaining nodes, delete tail (`B`) and confirm list cycles correctly, delete a middle node (`A`), delete the node the player is currently on (player starts at `GO`), attempt to delete a name that doesn’t exist. I verified correctness by using `printFromPlayer()` after each deletion to ensure traversal still wrapped properly and did not loop infinitely.  
+**Fix / resolution (or final decision):** I implemented `removeByName` using two pointers (`prev` and `current`) to unlink the matching node safely. I handled: **only-node list:** delete node and set `headNode`, `tailNode`, and `playerNode` to `nullptr`, **deleting head:** advance `headNode` and restore `tailNode->nextNode = headNode`, **deleting tail:** move `tailNode` back to `prev` and restore `tailNode->nextNode = headNode`, **player safety:** if `playerNode` points to the deleted node, move it to `current->nextNode` before deleting. This kept circular integrity and prevented dangling pointer crashes.  
+  **Commit(s):** `implement removeByName handling head/tail/only-node`  
