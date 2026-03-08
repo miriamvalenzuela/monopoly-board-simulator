@@ -176,7 +176,7 @@ public:
     // Print full board once (one full cycle)
     void printBoardOnce() {
         if (headNode == nullptr) {
-            cout << "Board is empty!" << endl;
+            cout << "Board is Empty!" << endl;
             return;
         }
 
@@ -192,7 +192,7 @@ public:
     // -------------------------------
     // Advanced Option A (Level 1): removeByName
     // -------------------------------
-    bool removeByName(string name) {
+    bool removeByName(const string& name) {
         if (headNode == nullptr) {
             return false;
         }
@@ -272,18 +272,6 @@ public:
     }
 
     // -------------------------------
-    // Advanced Option B (Level 2): Mirror the Board (Circular Reversal)
-    // -------------------------------
-    void mirrorBoard() {
-        // TODO:
-        // - Reverse the direction of the circular list by reversing next pointers
-        // - Preserve circular structure
-        // - Correctly handle empty list and single-node list
-        // - Player cursor must remain on the same logical space after reversal
-        cout << "mirrorBoard unwritten" << endl;
-    }
-
-    // -------------------------------
     // Edge-case helper: countSpaces O(n)
     // -------------------------------
     int countSpaces() {
@@ -340,8 +328,6 @@ int main() {
 
     CircularLinkedList<MonopolySpace> board;
 
-    board.printBoardOnce();
-
     // -------------------------------
     // Board Construction Phase
     // -------------------------------
@@ -356,8 +342,17 @@ int main() {
         spaces.push_back(MonopolySpace(name, color, i * 10, i * 2));
     }
 
+    cout << "Created " << spaces.size() << " spaces to add." << endl;
+
     int added = board.addMany(spaces);
     cout << "Built board with " << added << " spaces." << endl;
+    cout << "countSpaces() check: " << board.countSpaces() << " (expected " << added << ")" << endl;
+
+    bool extra = board.addSpace(MonopolySpace("Overflow Space", "None", 999, 99));
+    cout << "Attempt to add 41st space returned: " << (extra ? "true" : "false") << " (expected false)" << endl;
+
+    cout << "\nFirst 10 spaces from starting player position:" << endl;
+    board.printFromPlayer(10);
 
     // -------------------------------
     // Playable Traversal Loop
@@ -368,6 +363,9 @@ int main() {
 
         board.movePlayer(roll);
 
+        cout << "Landed on:" << endl;
+        board.printFromPlayer(1);
+
         cout << "Board view from player (next 5 spaces):" << endl;
         board.printFromPlayer(5);
 
@@ -375,12 +373,41 @@ int main() {
     }
 
     // -------------------------------
-    // Advanced Feature Demos (students choose path)
+    // Advanced Feature Demos (Option A)
     // -------------------------------
-
-    // Advanced Option A
+    cout << "\n===== Advanced Demo: findByColor(\"Red\") =====" << endl;
     vector<string> reds = board.findByColor("Red");
-    cout << "Red spaces: " << reds.size() << endl;
+    cout << "Found " << reds.size() << " red spaces." << endl;
+    cout << "First few red spaces:" << endl;
+    for (int i = 0; i < static_cast<int>(reds.size()) && i < 5; i++) {
+        cout << " - " << reds.at(i) << endl;
+    }
 
+    cout << "\n===== Advanced Demo: removeByName(\"Space 20\") =====" << endl;
+    bool removed = board.removeByName("Space 20");
+    cout << "removeByName(\"Space 20\") returned: " << (removed ? "true" : "false") << " (expected true)" << endl;
+    cout << "countSpaces() after removal: " << board.countSpaces() << " (expected 39)" << endl;
+
+    cout << "Print 8 spaces from player (board should still wrap correctly):" << endl;
+    board.printFromPlayer(8);
+
+    cout << "\n===== Advanced Demo: remove edge cases on a tiny board =====" << endl;
+    CircularLinkedList<MonopolySpace> tiny;
+    tiny.addSpace(MonopolySpace("GO", "None", 0, 0));
+    tiny.addSpace(MonopolySpace("A", "Blue", 10, 1));
+    tiny.addSpace(MonopolySpace("B", "Red", 20, 2));
+
+    cout << "Tiny board before deleting head (printing 5):" << endl;
+    tiny.printFromPlayer(5);
+
+    cout << "Delete head GO: " << (tiny.removeByName("GO") ? "true" : "false") << endl;
+    cout << "Tiny board after deleting head (printing 5):" << endl;
+    tiny.printFromPlayer(5);
+
+    cout << "Delete tail B: " << (tiny.removeByName("B") ? "true" : "false") << endl;
+    cout << "Tiny board after deleting tail (printing 5):" << endl;
+    tiny.printFromPlayer(5);
+
+    cout << "\nEnd of demo." << endl;
     return 0;
 }
