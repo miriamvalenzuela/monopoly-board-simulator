@@ -287,22 +287,44 @@ public:
     // Edge-case helper: countSpaces O(n)
     // -------------------------------
     int countSpaces() {
-        // TODO:
-        // - Must be O(n), traverse exactly once with correct stop condition
-        // - Do NOT rely on nodeCount for this method
-        cout << "countSpaces unwritten" << endl;
-        return 0;
+        if (headNode == nullptr) {
+            return 0;
+        }
+
+        int count = 1;                 // count the head
+        Node<T>* current = headNode->nextNode;
+
+        while (current != headNode) {  // stop when looping back to head
+            count++;
+            current = current->nextNode;
+        }
+
+        return count;
     }
 
     // -------------------------------
     // Cleanup
     // -------------------------------
     void clear() {
-        // TODO:
-        // - Safely delete all nodes
-        // - Tip: if tailNode exists, break the cycle first: tailNode->nextNode = nullptr
-        // - Then delete like a normal singly linked list
-        cout << "clear unwritten" << endl;
+        if (headNode == nullptr) {
+            return;
+        }
+
+        // Break cycle first
+        tailNode->nextNode = nullptr;
+
+        Node<T>* current = headNode;
+        while (current != nullptr) {
+            Node<T>* deleteThis = current;
+            current = current->nextNode;
+            delete deleteThis;
+        }
+
+        headNode = nullptr;
+        tailNode = nullptr;
+        playerNode = nullptr;
+        nodeCount = 0;
+        passGoCount = 0;
     }
 };
 
@@ -317,124 +339,6 @@ int main() {
     srand(static_cast<unsigned>(time(nullptr)));
 
     CircularLinkedList<MonopolySpace> board;
-
-// Test removeByName()
-// TEMPORARY
-// TODO: Delete tests in next commit
-
-// Empty board (should return false, no crash)
-{
-    CircularLinkedList<MonopolySpace> empty;
-    cout << "\n[Test 1] Empty board removeByName(\"GO\"):" << endl;
-    bool result = empty.removeByName("GO");
-    cout << "Returned: " << (result ? "true" : "false") << " (expected false)" << endl;
-
-    cout << "Printing from player (should show empty message):" << endl;
-    empty.printFromPlayer(3);
-}
-
-// Only-node list delete (head==tail)
-{
-    CircularLinkedList<MonopolySpace> one;
-    one.addSpace(MonopolySpace("GO", "None", 0, 0));
-
-    cout << "\n[Test 2] Only-node list before delete (print 3):" << endl;
-    one.printFromPlayer(3);
-
-    cout << "Removing \"GO\" (expected true):" << endl;
-    bool result = one.removeByName("GO");
-    cout << "Returned: " << (result ? "true" : "false") << " (expected true)" << endl;
-
-    cout << "After delete, printFromPlayer(3) should show empty message:" << endl;
-    one.printFromPlayer(3);
-}
-
-// Delete head node in multi-node list
-{
-    CircularLinkedList<MonopolySpace> list;
-    list.addSpace(MonopolySpace("GO", "None", 0, 0));      // head
-    list.addSpace(MonopolySpace("A", "Blue", 10, 1));
-    list.addSpace(MonopolySpace("B", "Red", 20, 2));       // tail
-
-    cout << "\n[Test 3] Multi-node list before deleting head (print 5):" << endl;
-    list.printFromPlayer(5);
-
-    cout << "Removing head \"GO\" (expected true):" << endl;
-    bool result = list.removeByName("GO");
-    cout << "Returned: " << (result ? "true" : "false") << " (expected true)" << endl;
-
-    cout << "After delete head, print 5 from player (should NOT show GO):" << endl;
-    list.printFromPlayer(5);
-}
-
-// Delete tail node in multi-node list
-{
-    CircularLinkedList<MonopolySpace> list;
-    list.addSpace(MonopolySpace("GO", "None", 0, 0));
-    list.addSpace(MonopolySpace("A", "Blue", 10, 1));
-    list.addSpace(MonopolySpace("B", "Red", 20, 2));       // tail
-
-    cout << "\n[Test 4] List before deleting tail (print 5):" << endl;
-    list.printFromPlayer(5);
-
-    cout << "Removing tail \"B\" (expected true):" << endl;
-    bool result = list.removeByName("B");
-    cout << "Returned: " << (result ? "true" : "false") << " (expected true)" << endl;
-
-    cout << "After delete tail, print 5 (should wrap between GO and A):" << endl;
-    list.printFromPlayer(5);
-}
-
-// Delete middle node in multi-node list
-{
-    CircularLinkedList<MonopolySpace> list;
-    list.addSpace(MonopolySpace("GO", "None", 0, 0));
-    list.addSpace(MonopolySpace("A", "Blue", 10, 1));      // middle
-    list.addSpace(MonopolySpace("B", "Red", 20, 2));
-
-    cout << "\n[Test 5] List before deleting middle (print 6):" << endl;
-    list.printFromPlayer(6);
-
-    cout << "Removing middle \"A\" (expected true):" << endl;
-    bool result = list.removeByName("A");
-    cout << "Returned: " << (result ? "true" : "false") << " (expected true)" << endl;
-
-    cout << "After delete middle, print 6 (should not show A):" << endl;
-    list.printFromPlayer(6);
-}
-
-// Remove player's current node safety
-{
-    CircularLinkedList<MonopolySpace> list;
-    list.addSpace(MonopolySpace("GO", "None", 0, 0));   // player starts here
-    list.addSpace(MonopolySpace("A", "Blue", 10, 1));
-    list.addSpace(MonopolySpace("B", "Red", 20, 2));
-
-    cout << "\n[Test 6] Player safety test before delete (print 4):" << endl;
-    list.printFromPlayer(4);
-
-    cout << "Removing player's current node \"GO\" (expected true):" << endl;
-    bool result = list.removeByName("GO");
-    cout << "Returned: " << (result ? "true" : "false") << " (expected true)" << endl;
-
-    cout << "After removing GO, print 4 should still work (player should be on a safe node):" << endl;
-    list.printFromPlayer(4);
-}
-
-// Remove a name that does not exist
-{
-    CircularLinkedList<MonopolySpace> list;
-    list.addSpace(MonopolySpace("GO", "None", 0, 0));
-    list.addSpace(MonopolySpace("A", "Blue", 10, 1));
-    list.addSpace(MonopolySpace("B", "Red", 20, 2));
-
-    cout << "\n[Test 7] Removing non-existent \"Z\" (expected false):" << endl;
-    bool result = list.removeByName("Z");
-    cout << "Returned: " << (result ? "true" : "false") << " (expected false)" << endl;
-
-    cout << "List should still be intact (print 4):" << endl;
-    list.printFromPlayer(4);
-}
 
     board.printBoardOnce();
 
