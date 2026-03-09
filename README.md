@@ -2,35 +2,20 @@
 ## Monopoly Board Simulator (Spring 2026)
 
 ### Overview
-In this assignment, you will implement a Monopoly-style game board using a **circular linked list**. Unlike previous offerings, the circular structure is not just for storage, it is the engine for traversal and gameplay. Your program will simulate a player moving around a fixed-size Monopoly board, passing GO, and interacting with board spaces through pointer-based movement.
+This project implements a Monopoly-style game board using a **circular linked list**. The circular structure is used for both storage and gameplay traversal. A single player moves around the board by following node pointers, can pass GO multiple times, and interacts with the space landed on through printed output.
 
 ### This assignment emphasizes
-- Correct implementation of a circular linked list.
-- Careful pointer management under constraints.
-- Traversal-based logic instead of index-based shortcuts.
-- Professional development practices using GitHub.
+- Correct implementation of a circular linked list
+- Careful pointer management under constraints
+- Traversal-based logic instead of index-based shortcuts
+- Professional development practices using GitHub
 
 ---
 
-## Board Constraints
-- The Monopoly board has a maximum of **40 spaces**.
-- Your linked list must **never exceed 40 nodes**.
-- Once the board reaches capacity, additional insertions must be rejected cleanly **without corrupting the list**.
-
----
-
-## Board Construction Policy (Read This Carefully)
-Spaces are added during a **board construction phase**, before gameplay begins.
-
-How you build the board is intentionally **left to you**. You may:
-- Define each space manually in code.
-- Load spaces from a file.
-- Generate spaces programmatically (including random generation).
-
-There is **no single required way** to construct the board. The requirement is that your implementation:
-- Supports adding spaces using the provided insertion functions.
-- Correctly enforces the 40-space limit.
-- Preserves circular integrity regardless of construction strategy.
+## Board Constraints (40-space limit)
+- The Monopoly board has a maximum of **40 spaces** (`MAX_SPACES = 40`).
+- The linked list must never exceed 40 nodes.
+- Once the board reaches capacity, additional insertions must be rejected cleanly **without** corrupting the list.
 
 ---
 
@@ -44,108 +29,117 @@ From the project directory:
 
 ---
 
-## Core Requirements (40 points)
-### Core A: Add a Space with Capacity Enforcement (10 points)
-**Function:** `addSpace(...)`  
-**Description:** Adds a new node to the tail, maintains circular structure, enforces max size 40, returns success/failure beyond capacity.
+## Data Structures Used
 
-### Core B: Add Multiple Spaces at Once (10 points)
-**Function:** `addMany(...)`  
-**Description:** Adds spaces sequentially, stops exactly at capacity, returns how many were added, and does not corrupt pointers.
+### `MonopolySpace` (data class)
+Represents one board space:
+- `propertyName` (string)
+- `propertyColor` (string)
+- `value` (int)
+- `rent` (int)
 
-### Core C: Traversal-Based Player Movement (10 points)
-**Function:** `movePlayer(int n)`  
-**Description:** Moves a player cursor forward by `n` steps node-by-node, wraps around, and tracks how many times the player passes GO.
+Key methods:
+- `print()` displays a readable line for a space.
 
-### Core D: Controlled Board Display (10 points)
-**Function:** `printFromPlayer(int count)`  
-**Description:** Prints a fixed number of spaces starting from the player (or a starting point if you design it that way) with a safe stop condition (no infinite loops).
+### `Node<T>` (linked list node)
+Each node stores:
+- `data` (a `MonopolySpace`)
+- `nextNode` pointer to the next node
 
----
+### `CircularLinkedList<T>` (the board "engine")
+The board is a circular linked list with three important pointers:
+- `headNode`: first node on the board (GO in this project)
+- `tailNode`: last node on the board
+- `playerNode`: the player's current position (cursor)
 
-## Playable Simulation Requirement
-Your `main.cpp` must demonstrate a simple playable traversal loop:
-- Build the board (up to 40 spaces).
-- Place a player at the starting space.
-- Simulate multiple turns:
-    - Roll a dice (2–12).
-    - Move the player.
-    - Print the space landed on.
-    - Track how many times the player passes GO.
-
-This is **not** a full Monopoly game. The goal is to prove traversal correctness.
+Circular rule:
+- `tailNode->nextNode` always points back to `headNode`, forming a ring.
 
 ---
 
-## Advanced Requirements (20 points total)
-Choose **one** of the following paths.
+## Complete Function List
 
-### Option A: Two Level 1 Features (10 points each)
-1) `removeByName(string name)`
-- Deletes the first matching space.
-- Must correctly handle:
-    - deleting the head node,
-    - deleting the only-node list,
-    - deleting the tail node.
+### MonopolySpace
+- `MonopolySpace()`
+  - Default constructor (safe empty values).
+- `MonopolySpace(string propertyName, string propertyColor, int value, int rent)`
+  - Creates a fully defined space.
+- `bool isEqual(const MonopolySpace& other) const`
+  - Compares spaces by name.
+- `void print() const`
+  - Prints: `Name | Color | $Value | Rent Rent`
 
-2) `findByColor(string color)`
-- Returns a `vector<string>` of matching space names or prints matching spaces.
-- Must traverse the ring **exactly once** using a correct stop condition.
+### CircularLinkedList<T>
+#### Core Requirements
+- `bool addSpace(const T& value)`
+  - Adds a new node to the tail.
+  - Enforces the **40-space limit** (returns `false` when full).
+  - Maintains circular integrity (`tail->next = head`).
+- `int addMany(const vector<T>& values)`
+  - Adds spaces sequentially until the board is full.
+  - Stops exactly at capacity and returns number added.
+- `void movePlayer(int steps)`
+  - Moves the player forward node-by-node for `steps`.
+  - Wraps automatically because the list is circular.
+  - Tracks passing GO when crossing from `tailNode` back to `headNode`.
+- `void printFromPlayer(int count)`
+  - Prints exactly `count` spaces starting from `playerNode`.
+  - Uses a fixed loop count to avoid infinite loops.
+- `void printBoardOnce()`
+  - Prints the entire board exactly once around the ring (one full cycle).
+- `int getPassGoCount()`
+  - Returns how many times the player passed GO.
 
-### Option B: One Level 2 Feature (20 points)
-**Mirror the Board (Circular List Reversal)**  
-Implement a function that reverses the traversal direction of the circular linked list.
+#### Advanced Option A Features
+- `bool removeByName(const string& name)`
+  - Deletes the **first** matching space by name.
+  - Correctly handles:
+    - deleting the head node
+    - deleting the tail node
+    - deleting the only-node list
+  - Preserves circular structure and keeps `playerNode` safe if it was deleted.
+- `vector<string> findByColor(const string& color)`
+  - Traverses the ring exactly once and returns matching space names.
 
-Required behavior:
-- Reverses the `next` links of all nodes.
-- Preserves circular structure (the list must still loop correctly).
-- Correctly handles:
-    - empty board,
-    - single-node board.
-- The player cursor must remain on the **same logical space** after reversal.
-
----
-
-## Edge Case Handling (20 points)
-Your program must correctly handle the following:
-- Operations on an empty board.
-- A single-node circular list.
-- Deleting the head node.
-- Deleting the tail node.
-- Adding multiple spaces up to exactly 40 without corruption.
-
----
-
-## GitHub & Process Requirements (20 points)
-### Repository
-- Each student must use their **own public GitHub repository**.
-- The Canvas submission must be a link to the public repo.
-
-### Commit History
-- Minimum **10 commits**.
-- Commits must be spread over **at least 14 days**.
-- Commits made in one sitting will not receive full credit.
-
-### Developer Log
-- Include a `DEVLOG.md` file.
-- Minimum **6 entries**.
-
-### README
-Your `README.md` must include:
-- Build and run instructions.
-- Description of data structures used.
-- A complete list of functions with short explanations.
-- Explanation of traversal and movement logic.
-- Explicit mention of the **40-space board limit**.
+#### Edge-Case / Helper Functions
+- `int countSpaces()`
+  - O(n) traversal that counts nodes by walking the ring exactly once.
+  - Does not rely on `nodeCount`.
+- `void clear()`
+  - Safely deletes all nodes:
+    - breaks the circular link first
+    - deletes like a normal singly linked list
+    - resets pointers and counters
 
 ---
 
-## Submission
-- Submit the GitHub repository link on Canvas.
-- No zip files.
-- Late submissions follow standard course policy.
+## Traversal and Movement Logic (no indexing shortcuts)
+- The board is a ring. The last node points back to the first node:
+  - `tailNode->nextNode == headNode`
+- The player’s location is stored as a pointer (`playerNode`) to a node in the ring.
+- To move `steps` spaces, the program advances the pointer one node at a time:
+  - repeat `steps` times: `playerNode = playerNode->nextNode`
+- Wrap-around requires no special indexing logic because following `nextNode` from the tail automatically returns to the head.
+- Passing GO is counted when a step crosses from the tail back to the head:
+  - if the player is currently on `tailNode` and takes a step, `passGoCount` increments.
 
 ---
 
-## Notes
-This assignment is about thinking in pointers, not arrays. If your logic depends on indexing shortcuts, you are solving the wrong problem. Treat the board like a ring, because that is exactly what it is.
+## Program Demonstration (main)
+`main()` demonstrates:
+1) **Board construction phase**
+  - Generates 40 spaces (GO + Space 1..39)
+  - Adds them using `addMany`
+  - Attempts a 41st insertion to prove capacity enforcement
+2) **Playable traversal loop**
+  - 10 turns
+  - Dice roll (2–12)
+  - Move player
+  - Print the landed space and next 5 spaces
+  - Display how many times GO has been passed
+3) **Advanced demos**
+  - Uses `findByColor("Red")`
+  - Uses `removeByName("Space 20")`
+  - Demonstrates remove edge cases on a tiny board
+
+---

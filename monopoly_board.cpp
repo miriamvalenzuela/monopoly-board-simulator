@@ -151,7 +151,7 @@ public:
         }
     }
 
-    int getPassGoCount() {
+    int getPassGoCount() const {
         return passGoCount;
     }
 

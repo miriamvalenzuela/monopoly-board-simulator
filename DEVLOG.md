@@ -1,31 +1,5 @@
 # Developer Log (DEVLOG.md)
 ## Monopoly Board Simulator (Spring 2026)
-
-Minimum **6 entries** required.
-
-Each entry must document learning and reasoning. Fabricated bugs are not expected.
-
----
-
-## Allowed Entry Types
-Each entry may be one of the following:
-
-1) **Bug Fix Entry**
-- The issue encountered.
-- Error messages or symptoms.
-- Attempts made.
-- Final resolution.
-
-2) **Edge Case / Testing Entry**
-- A failure discovered through testing.
-- The specific input/state that caused it.
-- The change you made to handle it correctly.
-
-3) **Engineering Decision Entry (up to 2 allowed)**
-- A design decision you made.
-- An alternative approach you considered.
-- Why you chose one approach over another (tradeoffs).
-
 ---
 
 ### Entry 1
@@ -47,7 +21,7 @@ Each entry may be one of the following:
 **Issue or decision:**  After inserting nodes, traversal did not loop correctly and sometimes printing only showed part of the list.  
 **Error message / symptom (if applicable):**  Printing was inconsistent; the list did not behave like a ring.  
 **What I tried:**  I printed `headNode`, `tailNode`, and `tailNode-->nextNode` information after each insertion and verified the links.  
-**Fix / resolution (or final decision):** I realized I must always maintain `tailNode-->nextNode == headNode`. The fix was to set `tailNode-->nextNode = headNode` after updating the tail in both the empty-list non-empty cases.  
+**Fix / resolution (or final decision):** I realized I must always maintain `tailNode-->nextNode == headNode`. The fix was to set `tailNode-->nextNode = headNode` after updating the tail in both the empty-list and non-empty cases.  
 **Commit(s):** `implement addSpace with MAX_SPACES enforcement and circular linking`  
 
 ---
